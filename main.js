@@ -39,7 +39,6 @@ if(document.getElementById("genDisplay")){
 }
 
 // Attach event listeners safely without inline onclick
-if(document.getElementById('saveBtn')) document.getElementById('saveBtn').addEventListener('click', save);
 if(document.getElementById('downloadBtn')) document.getElementById('downloadBtn').addEventListener('click', downloadModel);
 if(document.getElementById('discardBtn')) document.getElementById('discardBtn').addEventListener('click', discard);
 if(document.getElementById('reloadBtn')) document.getElementById('reloadBtn').addEventListener('click', () => location.reload());
@@ -66,20 +65,6 @@ const traffic=[
 ];
 
 animate();
-
-function save(){
-    localStorage.setItem("bestBrain",
-        JSON.stringify(bestCar.brain));
-    localStorage.setItem("generation", generation + 1);
-    
-    // Visual feedback
-    const btn = document.getElementById('saveBtn');
-    if(btn) {
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<span class="icon">✅</span> Saved!';
-        setTimeout(() => btn.innerHTML = originalText, 1500);
-    }
-}
 
 function downloadModel() {
     if (!bestCar) return;
