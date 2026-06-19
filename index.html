@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; script-src 'self'; img-src 'self' data:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer">
     <title>AI Self-Driving Car Simulation</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -33,13 +37,16 @@
             </div>
 
             <div id="verticalButtons">
-                <button onclick="save()" class="btn btn-primary" title="Save Best Brain">
-                    <span class="icon">💾</span> Save Model
+                <button id="saveBtn" class="btn btn-primary" title="Save Best Brain">
+                    <span class="icon">💾</span> Save Local
                 </button>
-                <button onclick="discard()" class="btn btn-danger" title="Discard Saved Brain">
-                    <span class="icon">🗑️</span> Discard Model
+                <button id="downloadBtn" class="btn btn-primary" style="background: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);" title="Download Brain as Code">
+                    <span class="icon">📥</span> Download Code
                 </button>
-                <button onclick="location.reload()" class="btn btn-secondary">
+                <button id="discardBtn" class="btn btn-danger" title="Discard Saved Brain">
+                    <span class="icon">🗑️</span> Discard Local
+                </button>
+                <button id="reloadBtn" class="btn btn-secondary">
                     <span class="icon">🔄</span> Reload Gen
                 </button>
             </div>

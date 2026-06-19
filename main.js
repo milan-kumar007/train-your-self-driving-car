@@ -11,20 +11,38 @@ const road=new Road(carCanvas.width/2,carCanvas.width*0.9);
 const N=100;
 const cars=generateCars(N);
 let bestCar=cars[0];
-if(localStorage.getItem("bestBrain")){
-    for(let i=0;i<cars.length;i++){
-        cars[i].brain=JSON.parse(
-            localStorage.getItem("bestBrain"));
-        if(i!=0){
-            NeuralNetwork.mutate(cars[i].brain,0.1);
+
+try {
+    if(localStorage.getItem("bestBrain")){
+        const parsedBrain = JSON.parse(localStorage.getItem("bestBrain"));
+        // Basic validation of brain structure to prevent injection attacks
+        if(parsedBrain && Array.isArray(parsedBrain.levels)) {
+            for(let i=0;i<cars.length;i++){
+                cars[i].brain=JSON.parse(localStorage.getItem("bestBrain"));
+                if(i!=0){
+                    NeuralNetwork.mutate(cars[i].brain,0.1);
+                }
+            }
+        } else {
+            console.warn("Invalid brain structure detected in localStorage. Discarding.");
+            localStorage.removeItem("bestBrain");
         }
     }
+} catch (e) {
+    console.error("Corrupted brain data in localStorage:", e);
+    localStorage.removeItem("bestBrain");
 }
 
 let generation = localStorage.getItem("generation") ? parseInt(localStorage.getItem("generation")) : 1;
 if(document.getElementById("genDisplay")){
     document.getElementById("genDisplay").innerText = generation;
 }
+
+// Attach event listeners safely without inline onclick
+if(document.getElementById('saveBtn')) document.getElementById('saveBtn').addEventListener('click', save);
+if(document.getElementById('downloadBtn')) document.getElementById('downloadBtn').addEventListener('click', downloadModel);
+if(document.getElementById('discardBtn')) document.getElementById('discardBtn').addEventListener('click', discard);
+if(document.getElementById('reloadBtn')) document.getElementById('reloadBtn').addEventListener('click', () => location.reload());
 
 const obstacles = [
     new Obstacle(road.getLaneCenter(1), -200, 20, 20, "POTHOLE"),
@@ -53,11 +71,38 @@ function save(){
     localStorage.setItem("bestBrain",
         JSON.stringify(bestCar.brain));
     localStorage.setItem("generation", generation + 1);
+    
+    // Visual feedback
+    const btn = document.getElementById('saveBtn');
+    if(btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="icon">✅</span> Saved!';
+        setTimeout(() => btn.innerHTML = originalText, 1500);
+    }
+}
+
+function downloadModel() {
+    if (!bestCar) return;
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(bestCar.brain, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "bestBrain.json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }
 
 function discard(){
     localStorage.removeItem("bestBrain");
     localStorage.removeItem("generation");
+    
+    // Visual feedback
+    const btn = document.getElementById('discardBtn');
+    if(btn) {
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<span class="icon">✅</span> Discarded!';
+        setTimeout(() => btn.innerHTML = originalText, 1500);
+    }
 }
 
 function generateCars(N){
@@ -115,7 +160,10 @@ function animate(time){
         Visualizer.drawNetwork(networkCtx,bestCar.brain);
         requestAnimationFrame(animate);
     } catch(err) {
-        document.body.innerHTML = `<div style="color:white; background:red; padding:20px; z-index:9999; position:absolute; top:0; left:0; right:0; font-family:monospace; font-size:16px;"><b>Error in animate loop:</b><br>${err.message}<br><br>${err.stack.replace(/\n/g, '<br>')}</div>` + document.body.innerHTML;
+        // Sanitize error output to prevent DOM XSS
+        const sanitizedMsg = err.message.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const sanitizedStack = err.stack ? err.stack.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+        document.body.innerHTML = `<div style="color:white; background:red; padding:20px; z-index:9999; position:absolute; top:0; left:0; right:0; font-family:monospace; font-size:16px;"><b>Error in animate loop:</b><br>${sanitizedMsg}<br><br>${sanitizedStack.replace(/\n/g, '<br>')}</div>` + document.body.innerHTML;
         throw err;
     }
 }
