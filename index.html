@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>AI Self-Driving Car Simulation</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="panel simulation-panel">
+            <div class="panel-header">
+                <h2>Simulation View</h2>
+            </div>
+            <canvas id="carCanvas"></canvas>
+        </div>
+        
+        <div class="panel controls-panel">
+            <div class="app-title">
+                <h1>Train UR Self-Driving Car</h1>
+                <p>Chaotic Environment Evolution</p>
+            </div>
+            
+            <div class="stats-card">
+                <div class="stat-row">
+                    <span>Generation:</span>
+                    <span id="genDisplay" class="highlight">1</span>
+                </div>
+                <div class="stat-row">
+                    <span>Cars Alive:</span>
+                    <span id="aliveDisplay" class="highlight">0</span>
+                </div>
+            </div>
+
+            <div id="verticalButtons">
+                <button onclick="save()" class="btn btn-primary" title="Save Best Brain">
+                    <span class="icon">💾</span> Save Model
+                </button>
+                <button onclick="discard()" class="btn btn-danger" title="Discard Saved Brain">
+                    <span class="icon">🗑️</span> Discard Model
+                </button>
+                <button onclick="location.reload()" class="btn btn-secondary">
+                    <span class="icon">🔄</span> Reload Gen
+                </button>
+            </div>
+            <div class="instruction">
+                <p>AI learns to navigate traffic using Ray-casting and a Feed-Forward Neural Network via Genetic Algorithms.</p>
+            </div>
+        </div>
+
+        <div class="panel network-panel">
+            <div class="panel-header">
+                <h2>Neural Network Viewer</h2>
+            </div>
+            <canvas id="networkCanvas"></canvas>
+        </div>
+    </div>
+
+    <script src="visualizer.js"></script>
+    <script src="network.js"></script>
+    <script src="sensor.js"></script>
+    <script src="utils.js"></script>
+    <script src="road.js"></script>
+    <script src="obstacle.js"></script>
+    <script src="controls.js"></script>
+    <script src="car.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
